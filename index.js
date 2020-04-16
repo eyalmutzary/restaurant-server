@@ -23,21 +23,21 @@ app.use(router);
 
 switch (process.env.NODE_ENV) {
   case "production":
-    console.log("production")
-    app.listen(process.env.POSTGRES_PORT);
+    console.log("production");
+    app.listen(process.env.SERVER_PORT);
     break;
   case "development":
-    app.listen(process.env.POSTGRES_PORT);
+    app.listen(process.env.SERVER_PORT);
     models.sequelize
       .sync({ force: true })
       .then((result) => {
         console.log("server synced");
-        console.log(`Server Port: ${process.env.POSTGRES_PORT}`);
+        console.log(`Server Port: ${process.env.SERVER_PORT}`);
       })
       .catch((err) => {
         console.log(err);
       });
-    console.log(`Server Port: ${process.env.POSTGRES_PORT}`);
+    console.log(`Server Port: ${process.env.SERVER_PORT}`);
     break;
   case "test":
     break;
