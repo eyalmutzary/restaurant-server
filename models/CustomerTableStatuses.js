@@ -17,5 +17,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
+  CustomerTableStatuses.associate = function (models) {
+    CustomerTableStatuses.hasMany(models.CustomerTables, {
+      foreignKey: { allowNull: false },
+    });
+  };
+
   return CustomerTableStatuses;
 };

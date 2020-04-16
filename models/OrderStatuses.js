@@ -17,6 +17,12 @@ module.exports = (sequelize, DataTypes) => {
       }
     );
 
+    OrderStatuses.associate = function (models) {
+      OrderStatuses.hasMany(models.Orders, {
+        foreignKey: { allowNull: false },
+      });
+    };
+
     return OrderStatuses;
 }
 

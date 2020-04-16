@@ -10,5 +10,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
+  Orders.associate = function (models) {
+    Orders.hasMany(models.OrderedProducts, {
+      foreignKey: { allowNull: false },
+    });
+  };
+
   return Orders;
 };

@@ -16,6 +16,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
+  Waiters.associate = function (models) {
+    Waiters.hasMany(models.Orders, {
+      foreignKey: { allowNull: false },
+    });
+  };
+
   return Waiters;
 }
 

@@ -32,5 +32,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
+  CustomerTables.associate = function (models) {
+    CustomerTables.hasMany(models.Orders, {
+      foreignKey: { allowNull: false },
+    });
+  };
+
   return CustomerTables;
 };

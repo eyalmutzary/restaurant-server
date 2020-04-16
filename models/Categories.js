@@ -1,21 +1,26 @@
 module.exports = (sequelize, DataTypes) => {
-    var Categories = sequelize.define(
-      'Categories',
-      {
-        name: {
-          type: DataTypes.STRING,
-          allowNull: false,
-          validate: {
-            notEmpty: true
-          },
-        }
+  var Categories = sequelize.define(
+    "Categories",
+    {
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
       },
-      {
-        tableName: 'Categories'
-      }
-    );
-  
-    return Categories;
-  }
-  
-  
+    },
+    {
+      timestamps: false,
+      tableName: "Categories",
+    }
+  );
+
+  Categories.associate = function (models) {
+    Categories.hasMany(models.Products, {
+      foreignKey: { allowNull: false },
+    });
+  };
+
+  return Categories;
+};
