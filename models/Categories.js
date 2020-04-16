@@ -1,16 +1,21 @@
 module.exports = (sequelize, DataTypes) => {
-    var Orders = sequelize.define(
-      'Orders',
+    var Categories = sequelize.define(
+      'Categories',
       {
-        // Add columns for connections: tableId, waiterId, orderStatusId
+        name: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          validate: {
+            notEmpty: true
+          },
+        }
       },
       {
-        timestamps: true,
-        tableName: 'Orders'
+        tableName: 'Categories'
       }
     );
   
-    return Orders;
+    return Categories;
   }
   
   

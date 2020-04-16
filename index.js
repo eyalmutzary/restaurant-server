@@ -1,33 +1,40 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+require("dotenv").config();
 const cors = require("cors");
 const router = require("./routes");
-require("dotenv").config();
+const models = require("./models"); // test
 
 const app = express();
 
 app.use(cors());
-
 app.use(bodyParser.json());
-
-// DBConnection
-
-switch (process.env.NODE_ENV) {
-  case "production":
-    app.listen(process.env.PORT);
-    break;
-  case "development":
-    app.listen(process.env.PORT);
-    console.log(`Server Port: ${process.env.PORT}`);
-    break;
-  case "test":
-    break;
-  default:
-    console.log("Unrecognized node environment");
-    break;
-}
-
 app.use(router);
+
+models.sequelize
+  .sync({ force: true })
+  .then((result) => {
+    app.listen(process.env.POSTGRES_PORT);
+    console.log(`Server Port: ${process.env.POSTGRES_PORT}`);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+// switch (process.env.NODE_ENV) {
+//   case "production":
+//     app.listen(process.env.POSTGRES_PORT);
+//     break;
+//   case "development":
+//     app.listen(process.env.POSTGRES_PORT);
+//     console.log(`Server Port: ${process.env.POSTGRES_PORT}`);
+//     break;
+//   case "test":
+//     break;
+//   default:
+//     console.log("Unrecognized node environment");
+//     break;
+// }
 
 app.use((err, req, res) => {
   console.log("Unexpected Error", err.stack);
