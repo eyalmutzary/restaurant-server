@@ -14,6 +14,9 @@ module.exports = (sequelize, DataTypes) => {
     Orders.hasMany(models.OrderedProducts, {
       foreignKey: { allowNull: false },
     });
+    Orders.belongsTo(models.CustomerTables, {
+      foreignKey: { allowNull: false },
+    });
   };
 
   return Orders;

@@ -13,5 +13,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
+  OrderedProducts.associate = function (models) {
+    OrderedProducts.belongsTo(models.Products, {
+      foreignKey: { allowNull: false },
+    });
+    OrderedProducts.belongsTo(models.Orders, {
+      foreignKey: { allowNull: false },
+    });
+  };
+
   return OrderedProducts;
 };
