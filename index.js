@@ -23,6 +23,7 @@ app.use(router);
 
 switch (process.env.NODE_ENV) {
   case "production":
+    console.log("production")
     app.listen(process.env.POSTGRES_PORT);
     break;
   case "development":
