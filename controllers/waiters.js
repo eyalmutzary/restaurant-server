@@ -40,8 +40,13 @@ const updateWaiterName = async (req, res, next) => {
 // Delete waiter by query param - id
 const deleteWaiter = async (req, res, next) => {
   try {
-    const deleteWaiter = await Waiters.deleteOne({ id: req.query.id });
-    res.send(deleteWaiter);
+    const deleteWaiter = await Waiters.destroy({
+      where: { id: req.query.id },
+    });
+    if (deleteWaiter === 1) {
+      res.status(200).send("Waiter Deleted.");
+    }
+    res.status(200).send("Waiter Id not found.");
   } catch (err) {
     next(err);
   }
