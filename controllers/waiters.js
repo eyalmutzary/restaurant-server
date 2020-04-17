@@ -46,7 +46,7 @@ const deleteWaiter = async (req, res, next) => {
     if (deleteWaiter === 1) {
       res.status(200).send("Waiter Deleted.");
     }
-    res.status(200).send("Waiter Id not found.");
+    res.status(400).send("Waiter Id not found.");
   } catch (err) {
     next(err);
   }

@@ -9,7 +9,7 @@ const {
 const extractAuthorizationToken = require("../middlewares/extractAuthorizationToken");
 
 router.get("/", extractAuthorizationToken, getAllWaiters);
-router.post("/createWaiter", extractAuthorizationToken, createNewWaiter);
+router.post("/", extractAuthorizationToken, createNewWaiter);
 router.patch("/", extractAuthorizationToken, updateWaiterName);
 router.delete("/", extractAuthorizationToken, deleteWaiter);
 

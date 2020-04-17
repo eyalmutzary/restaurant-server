@@ -46,7 +46,7 @@ const deleteCategory = async (req, res, next) => {
     if (deleteCategory === 1) {
       res.status(200).send("Category Deleted.");
     }
-    res.status(200).send("Category Id not found.");
+    res.status(400).send("Category Id not found.");
   } catch (err) {
     next(err);
   }

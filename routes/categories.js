@@ -9,7 +9,7 @@ const {
 const extractAuthorizationToken = require("../middlewares/extractAuthorizationToken");
 
 router.get("/", extractAuthorizationToken, getAllCategories);
-router.post("/createCategory", extractAuthorizationToken, createNewCategories);
+router.post("/", extractAuthorizationToken, createNewCategories);
 router.patch("/", extractAuthorizationToken, updateCategoryName);
 router.delete("/", extractAuthorizationToken, deleteCategory);
 

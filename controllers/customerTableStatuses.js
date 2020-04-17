@@ -46,7 +46,7 @@ const deleteCustomerTableStatus = async (req, res, next) => {
     if (deleteStatus === 1) {
       res.status(200).send("Status Deleted.");
     }
-    res.status(200).send("Status Id not found.");
+    res.status(400).send("Status Id not found.");
   } catch (err) {
     next(err);
   }

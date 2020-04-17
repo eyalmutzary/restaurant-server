@@ -10,7 +10,7 @@ const extractAuthorizationToken = require("../middlewares/extractAuthorizationTo
 
 router.get("/", extractAuthorizationToken, getAllCustomerTableStatuses);
 router.post(
-  "/createCustomerTableStatus",
+  "/",
   extractAuthorizationToken,
   createNewCustomerTableStatus
 );
