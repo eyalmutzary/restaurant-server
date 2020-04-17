@@ -2,6 +2,7 @@ const jwtService = require("../services/jwt");
 // const User = require("../models/User");
 
 module.exports = async (req, res, next) => {
+  next();
   // try {
   //   if (req.headers["authorization"]) {
   //     const jwtToken = req.headers["authorization"].split(" ")[1];

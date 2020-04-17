@@ -1,6 +1,7 @@
 // const User = require("../models/User");
 
 const login = async (req, res) => {
+  
   // const user = await User.findOne({ email: req.body.email });
   // if (user) {
   //   const isPasswordCorrect = await user.comparePassword(req.body.password);
