@@ -9,11 +9,7 @@ const {
 const extractAuthorizationToken = require("../middlewares/extractAuthorizationToken");
 
 router.get("/", extractAuthorizationToken, getAllOrderStatuses);
-router.post(
-  "/createOrderStatus",
-  extractAuthorizationToken,
-  createNewOrderStatus
-);
+router.post("/", extractAuthorizationToken, createNewOrderStatus);
 router.patch("/", extractAuthorizationToken, updateOrderStatusValue);
 router.delete("/", extractAuthorizationToken, deleteOrderStatus);
 

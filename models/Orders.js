@@ -17,6 +17,12 @@ module.exports = (sequelize, DataTypes) => {
     Orders.belongsTo(models.CustomerTables, {
       foreignKey: { allowNull: false },
     });
+    // Orders.belongsTo(models.Waiters, {
+    //   foreignKey: { allowNull: false },
+    // });
+    // Orders.belongsTo(models.OrderStatuses, {
+    //   foreignKey: { allowNull: false },
+    // });
   };
 
   return Orders;
