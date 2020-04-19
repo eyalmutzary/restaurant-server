@@ -1,6 +1,4 @@
 module.exports = (sequelize, DataTypes) => {
-
-    // Add customerTableStatusId column
   var CustomerTables = sequelize.define(
     "CustomerTables",
     {
@@ -27,8 +25,8 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
-        timestamps: true,
-        tableName: 'CustomerTables',
+      timestamps: true,
+      tableName: "CustomerTables",
     }
   );
 

@@ -1,37 +1,55 @@
-const { Orders } = require("../models");
+const { Orders, OrderedProducts, Products } = require("../models");
 
 const getOrders = async (req, res, next) => {
   try {
-    console.log(req.query.customerTableId);
-    switch (true) {
-      case req.query.customerTableId != undefined: {
-        orders = await Orders.findAll({
-          where: { CustomerTableId: req.query.customerTableId },
-        });
-        break;
-      }
-      case req.query.waiterId != undefined: {
-        orders = await Orders.findAll({
-          where: { WaiterId: req.query.waiterId },
-        });
-        break;
-      }
-      case req.query.orderStatusId != undefined: {
-        orders = await Orders.findAll({
-          where: { OrderStatusId: req.query.orderStatusId },
-        });
-        break;
-      }
-      case req.query.id != undefined: {
-        orders = await Orders.findOne({ where: { id: req.query.id } });
-        break;
-      }
-      default: {
-        orders = await Orders.findAll();
+    if (Object.keys(req.query).length === 0) {
+      orders = await Orders.findAll();
+    } else {
+      const [[key, value]] = Object.entries(req.query);
+      switch (key) {
+        case "customerTableId": {
+          orders = await Orders.findAll({
+            where: { CustomerTableId: value },
+          });
+          break;
+        }
+        case "waiterId": {
+          orders = await Orders.findAll({
+            where: { WaiterId: value },
+          });
+          break;
+        }
+        case "orderStatusId": {
+          orders = await Orders.findAll({
+            where: { OrderStatusId: value },
+          });
+          break;
+        }
+        case "id": {
+          orders = await Orders.findOne({ where: { id: value } });
+          break;
+        }
+        default: {
+          orders = await Orders.findAll();
+        }
       }
     }
 
     res.send(orders);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getProducts = async (req, res, next) => {
+  try {
+    const orderedProducts = await OrderedProducts.findAll(
+      { include: Products },
+      {
+        where: { OrderId: req.query.id },
+      }
+    );
+    res.status(200).send(orderedProducts);
   } catch (err) {
     next(err);
   }
@@ -78,6 +96,7 @@ const deleteOrder = async (req, res, next) => {
 
 module.exports = {
   getOrders,
+  getProducts,
   createNewOrder,
   updateOrder,
   deleteOrder,

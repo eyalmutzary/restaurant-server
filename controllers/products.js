@@ -3,18 +3,25 @@ const { Products } = require("../models");
 // Get all products or by category or by id
 const getProducts = async (req, res, next) => {
   try {
-    // const products = await Products.findAll({ include: [Categories] }); // Should I Include it?
-    if (req.query.categoryId) {
-      products = await Products.findAll({
-        where: { CategoryId: req.query.categoryId },
-      });
+    if (Object.keys(req.query).length === 0) {
+      products = await Products.findAll();
     } else {
-      if (req.query.id) {
-        products = await Products.findOne({ where: { id: req.query.id } });
-      } else {
-        products = await Products.findAll();
+      const [[key, value]] = Object.entries(req.query);
+      switch (key) {
+        case "categoryId": {
+          products = await Products.findAll({ where: { CategoryId: value } });
+          break;
+        }
+        case "id": {
+          products = await Products.findOne({ where: { id: value } });
+          break;
+        }
+        default: {
+          products = await Products.findAll();
+        }
       }
     }
+
     res.send(products);
   } catch (err) {
     next(err);

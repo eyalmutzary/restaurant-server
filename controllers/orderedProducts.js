@@ -1,26 +1,45 @@
-const { OrderedProducts } = require("../models");
+const { OrderedProducts, Products } = require("../models");
 
 const getOrderedProducts = async (req, res, next) => {
   try {
-    switch (true) {
-      case req.query.productId != undefined: {
-        orderedProducts = await OrderedProducts.findAll({
-          where: { ProductId: req.query.productId },
-        });
-        break;
-      }
-      case req.query.orderId != undefined: {
-        orderedProducts = await OrderedProducts.findAll({
-          where: { OrderId: req.query.orderId },
-        });
-        break;
-      }
-      default: {
-        orderedProducts = await OrderedProducts.findAll();
+    if (Object.keys(req.query).length === 0) {
+      orderedProducts = await OrderedProducts.findAll();
+    } else {
+      const [[key, value]] = Object.entries(req.query);
+      switch (key) {
+        case "productId": {
+          orderedProducts = await OrderedProducts.findAll({
+            where: { ProductId: value },
+          });
+          break;
+        }
+        case "orderId": {
+          orderedProducts = await OrderedProducts.findAll({
+            where: { OrderId: value },
+          });
+          break;
+        }
+        default: {
+          orderedProducts = await OrderedProducts.findAll();
+        }
       }
     }
 
     res.send(orderedProducts);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getProductDetails = async (req, res, next) => {
+  try {
+    const orderedProduct = await OrderedProducts.findOne(
+      { include: Products },
+      {
+        where: { id: req.query.id },
+      }
+    );
+    res.status(200).send(orderedProduct);
   } catch (err) {
     next(err);
   }
@@ -67,6 +86,7 @@ const deleteOrderedProduct = async (req, res, next) => {
 
 module.exports = {
   getOrderedProducts,
+  getProductDetails,
   createNewOrderedProduct,
   updateOrderedProduct,
   deleteOrderedProduct,
