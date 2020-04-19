@@ -1,4 +1,10 @@
-const { CustomerTables } = require("../models");
+const {
+  CustomerTables,
+  Orders,
+  OrderedProducts,
+  Products,
+} = require("../models");
+const { sumBy } = require("lodash");
 
 const getCustomerTable = async (req, res, next) => {
   try {
@@ -17,6 +23,31 @@ const getCustomerTable = async (req, res, next) => {
       }
     }
     res.send(customerTables);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getProducts = async (req, res, next) => {
+  try {
+    const orders = await Orders.findAll({
+      include: [
+        {
+          model: OrderedProducts,
+          required: true,
+          include: [{ model: Products, required: true }],
+        },
+      ],
+      where: { CustomerTableId: req.query.id },
+    });
+    // let tableSum = 0;
+    // console.log(sumBy(orders.order.OrderedProducts, "Product.price"));
+    let tableSum = 0;
+    orders.forEach(({ OrderedProducts }) => {
+      tableSum += sumBy(OrderedProducts, "Product.price");
+    });
+    orders["totalTablePrice"] = tableSum;
+    res.status(200).send(orders);
   } catch (err) {
     next(err);
   }
@@ -66,6 +97,7 @@ const deleteCustomerTable = async (req, res, next) => {
 
 module.exports = {
   getCustomerTable,
+  getProducts,
   createNewCustomerTable,
   updateCustomerTable,
   deleteCustomerTable,

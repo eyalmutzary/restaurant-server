@@ -1,4 +1,6 @@
 const { Orders, OrderedProducts, Products } = require("../models");
+const sequelize = require("sequelize");
+const { sumBy } = require("lodash");
 
 const getOrders = async (req, res, next) => {
   try {
@@ -43,11 +45,19 @@ const getOrders = async (req, res, next) => {
 
 const getProducts = async (req, res, next) => {
   try {
-    const orderedProducts = await OrderedProducts.findAll(
-      { include: Products },
-      {
-        where: { OrderId: req.query.id },
-      }
+    const orderedProducts = await OrderedProducts.findAll({
+      where: { OrderId: req.query.id },
+      include: [
+        {
+          model: Products,
+          required: true,
+          attributes: ["name", "price", "inStock"],
+        },
+      ],
+    });
+    orderedProducts["totalOrderPrice"] = sumBy(
+      orderedProducts,
+      "Product.price"
     );
     res.status(200).send(orderedProducts);
   } catch (err) {
