@@ -1,7 +1,9 @@
 const {
   CustomerTables,
+  CustomerTableStatuses,
   Orders,
   OrderedProducts,
+  OrderStatuses,
   Products,
 } = require("../models");
 const { sumBy } = require("lodash");
@@ -19,7 +21,9 @@ const getCustomerTable = async (req, res, next) => {
           where: { id: req.query.id },
         });
       } else {
-        customerTables = await CustomerTables.findAll();
+        customerTables = await CustomerTables.findAll({
+          include: [CustomerTableStatuses],
+        });
       }
     }
     res.send(customerTables);
@@ -34,19 +38,19 @@ const getProducts = async (req, res, next) => {
       include: [
         {
           model: OrderedProducts,
-          required: true,
           include: [{ model: Products, required: true }],
+        },
+        {
+          model: OrderStatuses,
         },
       ],
       where: { CustomerTableId: req.query.id },
     });
-    // let tableSum = 0;
-    // console.log(sumBy(orders.order.OrderedProducts, "Product.price"));
     let tableSum = 0;
-    orders.forEach(({ OrderedProducts }) => {
-      tableSum += sumBy(OrderedProducts, "Product.price");
-    });
-    orders["totalTablePrice"] = tableSum;
+    // orders.forEach(({ OrderedProducts }) => {
+    //   tableSum += sumBy(OrderedProducts, "Product.price");
+    // });
+    // orders["totalTablePrice"] = tableSum;
     res.status(200).send(orders);
   } catch (err) {
     next(err);
@@ -56,8 +60,16 @@ const getProducts = async (req, res, next) => {
 // Create new CustomerTable Table
 const createNewCustomerTable = async (req, res, next) => {
   try {
-    const newCustomerTable = await CustomerTables.create({ ...req.body });
-    res.status(200).send(newCustomerTable);
+    const customerTableStatus = await CustomerTableStatuses.findOne({
+      where: { status: req.body.status },
+    }).then(async ({ id }) => {
+      await CustomerTables.create({
+        ...req.body,
+        CustomerTableStatusId: id,
+      });
+    });
+
+    res.status(200).send("Table Added");
   } catch (err) {
     next(err);
   }

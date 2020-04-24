@@ -1,10 +1,13 @@
-const { Products } = require("../models");
+const { Products, Categories } = require("../models");
+var faker = require("faker");
 
 // Get all products or by category or by id
 const getProducts = async (req, res, next) => {
   try {
     if (Object.keys(req.query).length === 0) {
-      products = await Products.findAll();
+      products = await Products.findAll({
+        include: [Categories],
+      });
     } else {
       const [[key, value]] = Object.entries(req.query);
       switch (key) {
@@ -13,11 +16,14 @@ const getProducts = async (req, res, next) => {
           break;
         }
         case "id": {
-          products = await Products.findOne({ where: { id: value } });
+          products = await Products.findOne(
+            { where: { id: value } },
+            { include: [Categories] }
+          );
           break;
         }
         default: {
-          products = await Products.findAll();
+          res.status(404).send();
         }
       }
     }
@@ -31,6 +37,14 @@ const getProducts = async (req, res, next) => {
 // Create new Product
 const createNewProduct = async (req, res, next) => {
   try {
+    // const newProduct = await Products.create({
+    //   name: "DIFFERENT CATEGORY CHECK",
+    //   description: faker.lorem.sentences(3),
+    //   price: Number(faker.random.number({ min: 0, max: 20 })),
+    //   inStock: true,
+    //   imageUrl: faker.image.avatar(),
+    //   CategoryId: "8",
+    // });
     const newProduct = await Products.create({ ...req.body });
     res.status(200).send(newProduct);
   } catch (err) {

@@ -1,16 +1,19 @@
-// const User = require("../models/User");
+const { Waiters } = require("../models");
 
-const login = async (req, res) => {
-  
-  // const user = await User.findOne({ email: req.body.email });
-  // if (user) {
-  //   const isPasswordCorrect = await user.comparePassword(req.body.password);
-  //   if (isPasswordCorrect) {
-  //     const token = await user.createAuthorizationToken();
-  //     return res.send({ token });
-  //   }
-  // }
-  // res.status(401).send("Wrong email/password");
+const login = async (req, res, next) => {
+  try {
+    const waiter = await Waiters.findOne({ name: req.body.name });
+    if (waiter) {
+      // const isPasswordCorrect = await user.comparePassword(req.body.password);
+      // if (isPasswordCorrect) {
+      const token = await waiter.createAuthorizationToken();
+      return res.send({ token });
+      // }
+    }
+    res.status(401).send("Unauthorized");
+  } catch (error) {
+    next(error);
+  }
 };
 
 const signUp = async (req, res, next) => {

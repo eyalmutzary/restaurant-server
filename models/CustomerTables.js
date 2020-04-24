@@ -5,7 +5,6 @@ module.exports = (sequelize, DataTypes) => {
       tableNum: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
         validate: {
           notEmpty: true,
           isNumeric: true,
@@ -14,7 +13,6 @@ module.exports = (sequelize, DataTypes) => {
       diners: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
         validate: {
           notEmpty: true,
           isNumeric: true,
@@ -32,6 +30,9 @@ module.exports = (sequelize, DataTypes) => {
 
   CustomerTables.associate = function (models) {
     CustomerTables.hasMany(models.Orders, {
+      foreignKey: { allowNull: false },
+    });
+    CustomerTables.belongsTo(models.CustomerTableStatuses, {
       foreignKey: { allowNull: false },
     });
   };

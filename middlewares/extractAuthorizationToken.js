@@ -1,5 +1,5 @@
 const jwtService = require("../services/jwt");
-// const User = require("../models/User");
+const { Waiters } = require("../models");
 
 module.exports = async (req, res, next) => {
   next();
@@ -7,8 +7,8 @@ module.exports = async (req, res, next) => {
   //   if (req.headers["authorization"]) {
   //     const jwtToken = req.headers["authorization"].split(" ")[1];
   //     const tokenData = await jwtService.verify(jwtToken);
-  //     req.params.User = await User.findById(tokenData._id);
-  //     req.params.User ? next() : res.status(403).send(`User isn't exist`);
+  //     req.params.Waiters = await Waiters.findOne({ id: tokenData._id });
+  //     req.params.Waiters ? next() : res.status(403).send(`Waiter isn't exist`);
   //   } else {
   //     res.status(403).send("Unauthorized");
   //   }

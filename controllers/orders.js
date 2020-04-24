@@ -1,4 +1,10 @@
-const { Orders, OrderedProducts, Products } = require("../models");
+const {
+  Orders,
+  OrderedProducts,
+  OrderStatuses,
+  Products,
+  CustomerTables,
+} = require("../models");
 const sequelize = require("sequelize");
 const { sumBy } = require("lodash");
 
@@ -12,6 +18,16 @@ const getOrders = async (req, res, next) => {
         case "customerTableId": {
           orders = await Orders.findAll({
             where: { CustomerTableId: value },
+          });
+          break;
+        }
+        case "customerTableNum": {
+          await CustomerTables.findOne({
+            where: { tableNum: value },
+          }).then(async ({ id }) => {
+            orders = await Orders.findAll({
+              where: { CustomerTableId: id },
+            });
           });
           break;
         }
@@ -90,6 +106,26 @@ const updateOrder = async (req, res, next) => {
   }
 };
 
+const updateOrderStatus = async (req, res, next) => {
+  try {
+    const status = await OrderStatuses.findOne({
+      where: { status: req.body.status },
+    }).then(async ({ id }) => {
+      await Orders.update(
+        { OrderStatusId: id },
+        {
+          where: {
+            id: req.body.id,
+          },
+        }
+      );
+    });
+    res.status(200).send("Order status updated.");
+  } catch (err) {
+    next(err);
+  }
+};
+
 const deleteOrder = async (req, res, next) => {
   try {
     const deleteOrder = await Orders.destroy({
@@ -109,5 +145,6 @@ module.exports = {
   getProducts,
   createNewOrder,
   updateOrder,
+  updateOrderStatus,
   deleteOrder,
 };
