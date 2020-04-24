@@ -62,11 +62,10 @@ const createNewCustomerTable = async (req, res, next) => {
   try {
     const customerTableStatus = await CustomerTableStatuses.findOne({
       where: { status: req.body.status },
-    }).then(async ({ id }) => {
-      await CustomerTables.create({
-        ...req.body,
-        CustomerTableStatusId: id,
-      });
+    });
+    const table = await CustomerTables.create({
+      ...req.body,
+      CustomerTableStatusId: customerTableStatus.id,
     });
 
     res.status(200).send("Table Added");

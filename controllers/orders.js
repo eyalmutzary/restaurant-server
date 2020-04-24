@@ -22,12 +22,11 @@ const getOrders = async (req, res, next) => {
           break;
         }
         case "customerTableNum": {
-          await CustomerTables.findOne({
+          const customerTable = await CustomerTables.findOne({
             where: { tableNum: value },
-          }).then(async ({ id }) => {
-            orders = await Orders.findAll({
-              where: { CustomerTableId: id },
-            });
+          });
+          orders = await Orders.findAll({
+            where: { CustomerTableId: customerTable.id },
           });
           break;
         }
@@ -110,16 +109,15 @@ const updateOrderStatus = async (req, res, next) => {
   try {
     const status = await OrderStatuses.findOne({
       where: { status: req.body.status },
-    }).then(async ({ id }) => {
-      await Orders.update(
-        { OrderStatusId: id },
-        {
-          where: {
-            id: req.body.id,
-          },
-        }
-      );
     });
+    const updatedOrder = await Orders.update(
+      { OrderStatusId: status.id },
+      {
+        where: {
+          id: req.body.id,
+        },
+      }
+    );
     res.status(200).send("Order status updated.");
   } catch (err) {
     next(err);
