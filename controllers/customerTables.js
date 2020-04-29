@@ -10,20 +10,44 @@ const { sumBy } = require("lodash");
 
 const getCustomerTable = async (req, res, next) => {
   try {
-    // const customerTables = null;
-    if (req.query.customerTableStatusId) {
+    if (Object.keys(req.query).length === 0) {
+      console.log("bam@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
       customerTables = await CustomerTables.findAll({
-        where: { CustomerTableStatusId: req.query.customerTableStatusId },
+        include: [CustomerTableStatuses],
       });
     } else {
-      if (req.query.id) {
-        customerTables = await CustomerTables.findOne({
-          where: { id: req.query.id },
-        });
-      } else {
-        customerTables = await CustomerTables.findAll({
-          include: [CustomerTableStatuses],
-        });
+      const [[key, value]] = Object.entries(req.query);
+      switch (key) {
+        case "status": {
+          const status = await CustomerTableStatuses.findOne({
+            where: { status: value },
+          });
+          customerTables = await CustomerTables.findAll({
+            where: { CustomerTableStatusId: status.id },
+            include: [CustomerTableStatuses],
+          });
+          break;
+        }
+        case "tableNum": {
+          customerTables = await CustomerTables.findOne({
+            where: { tableNum: value },
+            include: [CustomerTableStatuses],
+          });
+          break;
+        }
+        case "id": {
+          customerTables = await CustomerTables.findOne({
+            where: { id: value },
+            include: [CustomerTableStatuses],
+          });
+          break;
+        }
+        default: {
+          customerTables = await CustomerTables.findAll({
+            include: [CustomerTableStatuses],
+          });
+          break;
+        }
       }
     }
     res.send(customerTables);

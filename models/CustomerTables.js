@@ -21,6 +21,9 @@ module.exports = (sequelize, DataTypes) => {
       note: {
         type: DataTypes.STRING,
       },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+      },
     },
     {
       timestamps: true,

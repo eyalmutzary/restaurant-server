@@ -29,7 +29,7 @@ switch (process.env.NODE_ENV) {
   case "development":
     app.listen(process.env.SERVER_PORT);
     models.sequelize
-      .sync({ force: false })
+      .sync({ force: true })
       .then((result) => {
         console.log("server synced");
         console.log(`Server Port: ${process.env.SERVER_PORT}`);

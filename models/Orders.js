@@ -1,7 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
   var Orders = sequelize.define(
     "Orders",
-    {},
+    {
+      isActive: {
+        type: DataTypes.BOOLEAN,
+      },
+    },
     {
       timestamps: true,
       tableName: "Orders",

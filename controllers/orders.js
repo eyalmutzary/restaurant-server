@@ -80,10 +80,45 @@ const getProducts = async (req, res, next) => {
   }
 };
 
+// const createNewOrder = async (req, res, next) => {
+//   try {
+//     const newOrder = await Orders.create({ ...req.body });
+//     res.status(200).send(newOrder);
+//   } catch (err) {
+//     next(err);
+//   }
+// };
+
 const createNewOrder = async (req, res, next) => {
   try {
-    const newOrder = await Orders.create({ ...req.body });
-    res.status(200).send(newOrder);
+    const customerTable = await CustomerTables.findOne({
+      where: { tableNum: req.body.tableNum },
+    });
+
+    const orderStatus = await OrderStatuses.findOne({
+      where: { status: "Ordered" },
+    });
+
+    const newOrder = await Orders.create({
+      CustomerTableId: customerTable.id,
+      OrderStatusId: orderStatus.id,
+      WaiterId: 1, // change late when add waiter auth
+    });
+
+    if (req.query.empty) {
+      res.status(200).send(newOrder);
+    }
+
+    let orderedProductsBulk = [];
+    req.body.orderedProducts.forEach(({ productId, note }) => {
+      orderedProductsBulk.push({
+        note: note,
+        ProductId: productId,
+        OrderId: newOrder.id,
+      });
+    });
+    await OrderedProducts.bulkCreate(orderedProductsBulk, { validate: true });
+    res.status(201).send(newOrder);
   } catch (err) {
     next(err);
   }
