@@ -4,6 +4,7 @@ const {
   OrderStatuses,
   Products,
   CustomerTables,
+  Waiters,
 } = require("../models");
 const sequelize = require("sequelize");
 const { sumBy } = require("lodash");
@@ -61,7 +62,7 @@ const getOrders = async (req, res, next) => {
 const getProducts = async (req, res, next) => {
   try {
     const orderedProducts = await OrderedProducts.findAll({
-      where: { OrderId: req.query.id },
+      where: { OrderId: req.query.id, isActive: true },
       include: [
         {
           model: Products,
@@ -102,7 +103,6 @@ const createNewOrder = async (req, res, next) => {
     const newOrder = await Orders.create({
       CustomerTableId: customerTable.id,
       OrderStatusId: orderStatus.id,
-      WaiterId: 1, // change late when add waiter auth
     });
 
     if (req.query.empty) {
@@ -145,8 +145,11 @@ const updateOrderStatus = async (req, res, next) => {
     const status = await OrderStatuses.findOne({
       where: { status: req.body.status },
     });
+    const waiter = await Waiters.findOne({
+      where: { name: req.body.waiterName },
+    });
     const updatedOrder = await Orders.update(
-      { OrderStatusId: status.id },
+      { OrderStatusId: status.id, WaiterId: waiter.id },
       {
         where: {
           id: req.body.id,

@@ -38,12 +38,12 @@ const getProducts = async (req, res, next) => {
 const createNewProduct = async (req, res, next) => {
   try {
     // const newProduct = await Products.create({
-    //   name: "DIFFERENT CATEGORY CHECK",
+    //   name: ,
     //   description: faker.lorem.sentences(3),
     //   price: Number(faker.random.number({ min: 0, max: 20 })),
     //   inStock: true,
     //   imageUrl: faker.image.avatar(),
-    //   CategoryId: "8",
+    //   CategoryId: Number(faker.random.number({ min: 1, max: 2 })),
     // });
     const newProduct = await Products.create({ ...req.body });
     res.status(200).send(newProduct);

@@ -13,7 +13,9 @@ const getAllCategories = async (req, res, next) => {
 // Create new Category
 const createNewCategories = async (req, res, next) => {
   try {
-    const newCategory = await Categories.create({ ...req.body });
+    const newCategory = await Categories.bulkCreate(req.body, {
+      validate: true,
+    });
     res.send(newCategory);
   } catch (err) {
     next(err);

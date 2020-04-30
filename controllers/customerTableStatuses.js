@@ -13,7 +13,10 @@ const getAllCustomerTableStatuses = async (req, res, next) => {
 // Create new status
 const createNewCustomerTableStatus = async (req, res, next) => {
   try {
-    const newStatus = await CustomerTableStatuses.create({ ...req.body });
+    // await OrderedProducts.bulkCreate(req.body, { validate: true });
+    const newStatus = await CustomerTableStatuses.bulkCreate(req.body, {
+      validate: true,
+    });
     res.send(newStatus);
   } catch (err) {
     next(err);

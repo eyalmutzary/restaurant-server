@@ -11,9 +11,9 @@ const { sumBy } = require("lodash");
 const getCustomerTable = async (req, res, next) => {
   try {
     if (Object.keys(req.query).length === 0) {
-      console.log("bam@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
       customerTables = await CustomerTables.findAll({
         include: [CustomerTableStatuses],
+        order: ["tableNum"],
       });
     } else {
       const [[key, value]] = Object.entries(req.query);
@@ -25,6 +25,7 @@ const getCustomerTable = async (req, res, next) => {
           customerTables = await CustomerTables.findAll({
             where: { CustomerTableStatusId: status.id },
             include: [CustomerTableStatuses],
+            order: ["tableNum"],
           });
           break;
         }
@@ -45,6 +46,7 @@ const getCustomerTable = async (req, res, next) => {
         default: {
           customerTables = await CustomerTables.findAll({
             include: [CustomerTableStatuses],
+            order: ["tableNum"],
           });
           break;
         }
@@ -58,6 +60,15 @@ const getCustomerTable = async (req, res, next) => {
 
 const getProducts = async (req, res, next) => {
   try {
+    let tableId;
+    if (!req.query.id) {
+      const customerTable = await CustomerTables.findOne({
+        where: { tableNum: req.query.tableNum },
+      });
+      tableId = customerTable.id;
+    } else {
+      tableId = req.query.id;
+    }
     const orders = await Orders.findAll({
       include: [
         {
@@ -68,13 +79,8 @@ const getProducts = async (req, res, next) => {
           model: OrderStatuses,
         },
       ],
-      where: { CustomerTableId: req.query.id },
+      where: { CustomerTableId: tableId },
     });
-    let tableSum = 0;
-    // orders.forEach(({ OrderedProducts }) => {
-    //   tableSum += sumBy(OrderedProducts, "Product.price");
-    // });
-    // orders["totalTablePrice"] = tableSum;
     res.status(200).send(orders);
   } catch (err) {
     next(err);
@@ -84,15 +90,22 @@ const getProducts = async (req, res, next) => {
 // Create new CustomerTable Table
 const createNewCustomerTable = async (req, res, next) => {
   try {
-    const customerTableStatus = await CustomerTableStatuses.findOne({
-      where: { status: req.body.status },
+    const customerTables = await CustomerTables.findAll({
+      where: { tableNum: req.body.tableNum, isActive: true },
     });
-    const table = await CustomerTables.create({
-      ...req.body,
-      CustomerTableStatusId: customerTableStatus.id,
-    });
-
-    res.status(200).send("Table Added");
+    if (customerTables.length !== 0) {
+      res.status(403).send("Table Number already open.");
+    } else {
+      const customerTableStatus = await CustomerTableStatuses.findOne({
+        where: { status: req.body.status },
+      });
+      const table = await CustomerTables.create({
+        ...req.body,
+        isActive: true,
+        CustomerTableStatusId: customerTableStatus.id,
+      });
+      res.status(200).send("Table Added");
+    }
   } catch (err) {
     next(err);
   }
