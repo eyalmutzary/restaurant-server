@@ -6,12 +6,21 @@ const {
   OrderStatuses,
   Products,
 } = require("../models");
-const { sumBy } = require("lodash");
+
+const sequelize = require("sequelize");
 
 const getCustomerTable = async (req, res, next) => {
   try {
+    const statusClosed = await CustomerTableStatuses.findOne({
+      where: { status: "closed" },
+    });
     if (Object.keys(req.query).length === 0) {
       customerTables = await CustomerTables.findAll({
+        where: {
+          CustomerTableStatusId: {
+            [sequelize.Op.not]: statusClosed.id,
+          },
+        },
         include: [CustomerTableStatuses],
         order: ["tableNum"],
       });
@@ -25,13 +34,18 @@ const getCustomerTable = async (req, res, next) => {
           customerTables = await CustomerTables.findAll({
             where: { CustomerTableStatusId: status.id },
             include: [CustomerTableStatuses],
-            order: ["tableNum"],
+            order: ["updatedAt", "tableNum"],
           });
           break;
         }
         case "tableNum": {
           customerTables = await CustomerTables.findOne({
-            where: { tableNum: value },
+            where: {
+              tableNum: value,
+              CustomerTableStatusId: {
+                [sequelize.Op.not]: statusClosed.id,
+              },
+            },
             include: [CustomerTableStatuses],
           });
           break;
@@ -45,6 +59,11 @@ const getCustomerTable = async (req, res, next) => {
         }
         default: {
           customerTables = await CustomerTables.findAll({
+            where: {
+              CustomerTableStatusId: {
+                [sequelize.Op.not]: statusClosed.id,
+              },
+            },
             include: [CustomerTableStatuses],
             order: ["tableNum"],
           });
@@ -114,11 +133,55 @@ const createNewCustomerTable = async (req, res, next) => {
 // Update CustomerTable
 const updateCustomerTable = async (req, res, next) => {
   try {
+    let tableId;
+    if (!req.query.id) {
+      const customerTable = await CustomerTables.findOne({
+        where: { tableNum: req.query.tableNum },
+      });
+      tableId = customerTable.id;
+    } else {
+      tableId = req.query.id;
+    }
+    if (req.body.status) {
+      const status = await CustomerTableStatuses.findOne({
+        where: { status: req.body.status },
+      });
+    }
     const updateCustomerTable = await CustomerTables.update(
-      { ...req.body },
+      { CustomerTableStatusId: status.id, ...req.body },
       {
         where: {
-          id: req.body.id,
+          id: tableId,
+        },
+      }
+    );
+    res.send(updateCustomerTable);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Update CustomerTable status
+const updateCustomerTableStatus = async (req, res, next) => {
+  try {
+    let tableId;
+    if (!req.query.id) {
+      const customerTable = await CustomerTables.findOne({
+        where: { tableNum: req.query.tableNum },
+      });
+      tableId = customerTable.id;
+    } else {
+      tableId = req.query.id;
+    }
+    const status = await CustomerTableStatuses.findOne({
+      where: { status: req.body.status },
+    });
+    const isTableStillActive = req.body.status !== "closed";
+    const updateCustomerTable = await CustomerTables.update(
+      { CustomerTableStatusId: status.id, isActive: isTableStillActive },
+      {
+        where: {
+          id: tableId,
         },
       }
     );
@@ -148,5 +211,6 @@ module.exports = {
   getProducts,
   createNewCustomerTable,
   updateCustomerTable,
+  updateCustomerTableStatus,
   deleteCustomerTable,
 };
