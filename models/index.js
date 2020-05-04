@@ -4,12 +4,6 @@ const Sequelize = require("sequelize");
 const basename = path.basename(__filename);
 const db = {};
 
-console.log(
-  process.env.POSTGRES_DATABASE_NAME,
-  process.env.POSTGRES_USER,
-  process.env.POSTGRES_PASSWORD
-);
-
 const sequelize = new Sequelize(
   process.env.POSTGRES_DATABASE_NAME,
   process.env.POSTGRES_USER,

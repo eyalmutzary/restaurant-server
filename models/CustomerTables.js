@@ -1,13 +1,10 @@
 module.exports = (sequelize, DataTypes) => {
-
-    // Add customerTableStatusId column
   var CustomerTables = sequelize.define(
     "CustomerTables",
     {
       tableNum: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
         validate: {
           notEmpty: true,
           isNumeric: true,
@@ -16,7 +13,6 @@ module.exports = (sequelize, DataTypes) => {
       diners: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
         validate: {
           notEmpty: true,
           isNumeric: true,
@@ -25,15 +21,21 @@ module.exports = (sequelize, DataTypes) => {
       note: {
         type: DataTypes.STRING,
       },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+      },
     },
     {
-        timestamps: true,
-        tableName: 'CustomerTables',
+      timestamps: true,
+      tableName: "CustomerTables",
     }
   );
 
   CustomerTables.associate = function (models) {
     CustomerTables.hasMany(models.Orders, {
+      foreignKey: { allowNull: false },
+    });
+    CustomerTables.belongsTo(models.CustomerTableStatuses, {
       foreignKey: { allowNull: false },
     });
   };

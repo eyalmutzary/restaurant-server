@@ -1,27 +1,31 @@
+const jwtService = require("../services/jwt");
+
 module.exports = (sequelize, DataTypes) => {
   var Waiters = sequelize.define(
-    'Waiters',
+    "Waiters",
     {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          notEmpty: true
+          notEmpty: true,
         },
-      }
+      },
     },
     {
       timestamps: false,
-      tableName: 'Waiters'
+      tableName: "Waiters",
     }
   );
 
   Waiters.associate = function (models) {
     Waiters.hasMany(models.Orders, {
-      foreignKey: { allowNull: false },
+      foreignKey: { allowNull: true },
     });
   };
 
-  return Waiters;
-}
+  Waiters.prototype.createAuthorizationToken = () =>
+    jwtService.sign({ waiter_id: this.id });
 
+  return Waiters;
+};

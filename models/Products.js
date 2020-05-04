@@ -1,5 +1,4 @@
 module.exports = (sequelize, DataTypes) => {
-  // Add categoryId connection
   var Products = sequelize.define(
     "Products",
     {
@@ -18,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       price: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.FLOAT,
         allowNull: false,
         validate: {
           notEmpty: true,
@@ -47,6 +46,10 @@ module.exports = (sequelize, DataTypes) => {
 
   Products.associate = function (models) {
     Products.hasMany(models.OrderedProducts, {
+      foreignKey: { allowNull: false },
+    });
+
+    Products.belongsTo(models.Categories, {
       foreignKey: { allowNull: false },
     });
   };
